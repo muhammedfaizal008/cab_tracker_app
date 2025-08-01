@@ -307,30 +307,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       
                       const SizedBox(height: 16),
-                      
-                      // Subtitle with blur effect
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          'Next-Gen Attendance',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.8),
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 80),
+
                       
                       // Futuristic loading indicator
                       SizedBox(

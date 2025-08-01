@@ -13,7 +13,6 @@ void main() async {
   await attendanceController.loadAllRecords();
   await attendanceController.loadFarePerTrip();
 
-
   runApp(
     ChangeNotifierProvider(
       create: (context) => attendanceController,
@@ -83,6 +82,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Attendance Tracker',
       theme: lightTheme,
       darkTheme: darkTheme,

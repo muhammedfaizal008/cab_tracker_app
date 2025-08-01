@@ -131,12 +131,6 @@ Future<void> updateFarePerTrip(double newFare) async {
       'totalEveningTrips': totalEveningTrips,
       'totalTrips': totalMorningTrips + totalEveningTrips,
       'totalWorkingDays': totalWorkingDays,
-      'morningUsagePercentage': totalWorkingDays > 0 
-          ? ((totalMorningTrips / totalWorkingDays) * 100).round() 
-          : 0,
-      'eveningUsagePercentage': totalWorkingDays > 0 
-          ? ((totalEveningTrips / totalWorkingDays) * 100).round() 
-          : 0,
     };
   }
 
