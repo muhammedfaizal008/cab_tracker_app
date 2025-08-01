@@ -420,48 +420,52 @@
                   cellMargin: const EdgeInsets.all(4),
                 ),
                 calendarBuilders: CalendarBuilders(
-                  defaultBuilder: (context, day, focusedDay) {
-                    final attendance = attendanceController.getAttendanceForDate(day);
+  defaultBuilder: (context, day, focusedDay) {
+    final attendance = attendanceController.getAttendanceForDate(day);
 
-                    Color? bgColor;
+    final morning = attendance.morningCabUsed;
+    final evening = attendance.eveningCabUsed;
 
-                    final morning = attendance.morningCabUsed;
-                    final evening = attendance.eveningCabUsed;
+    final today = DateTime.now();
+    final isPastDay = day.isBefore(DateTime(today.year, today.month, today.day));
 
-                    if (morning && evening) {
-                      bgColor = const Color(0xFF10B981); // green
-                    } else if (morning) {
-                      bgColor = const Color(0xFFF59E0B); // orange
-                    } else if (evening) {
-                      bgColor = const Color(0xFF8B5CF6); // purple
-                    } else {
-                      bgColor = const Color.fromARGB(255, 190, 199, 212); // dark blue
-                    }
+    Color? bgColor;
 
-                    return Center(
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${day.day}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  
-                    return null;
-                  },
-                ),
+    if (morning && evening) {
+      bgColor = const Color(0xFF10B981); // green
+    } else if (morning) {
+      bgColor = const Color(0xFFF59E0B); // orange
+    } else if (evening) {
+      bgColor = const Color(0xFF8B5CF6); // purple
+    } else if (isPastDay) {
+      bgColor = Colors.redAccent; // red for previous days where neither trip used
+    } else {
+      bgColor = const Color.fromARGB(255, 190, 199, 212); // upcoming days or today
+    }
+
+    return Center(
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: bgColor,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Text(
+            '${day.day}',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+),
+
               ),
 
                 ),
