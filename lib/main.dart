@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false ,
       title: 'Attendance Tracker',
       theme: lightTheme,
       darkTheme: darkTheme,

@@ -267,8 +267,8 @@ class _SplashScreenState extends State<SplashScreen>
                                               Color(0xFFFBBF24),
                                             ],
                                           ).createShader(bounds),
-                                          child: const Icon(
-                                            Icons.local_taxi_rounded,
+                                          child:  Icon(
+                                            Icons.local_taxi,
                                             size: 70,
                                             color: Colors.white,
                                           ),
@@ -295,9 +295,9 @@ class _SplashScreenState extends State<SplashScreen>
                           ],
                         ).createShader(bounds),
                         child: Text(
-                          'CABTRACK',
+                          'Attendance Tracker',
                           style: GoogleFonts.poppins(
-                            fontSize: 42,
+                            fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: 4.0,
@@ -309,75 +309,46 @@ class _SplashScreenState extends State<SplashScreen>
                       const SizedBox(height: 16),
 
                       
-                      // Futuristic loading indicator
+                      // Modern minimal loading indicator
                       SizedBox(
-                        width: 100,
-                        height: 100,
+                        width: 60,
+                        height: 60,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            // Outer rotating ring
+                            // Rotating gradient ring
                             AnimatedBuilder(
                               animation: _rotateAnimation,
                               builder: (context, child) {
                                 return Transform.rotate(
                                   angle: _rotateAnimation.value * 2 * math.pi,
                                   child: Container(
-                                    width: 100,
-                                    height: 100,
+                                    width: 60,
+                                    height: 60,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       gradient: SweepGradient(
                                         colors: [
-                                          Colors.transparent,
-                                          const Color(0xFF60A5FA).withOpacity(0.8),
+                                          const Color(0xFF6366F1),
+                                          const Color(0xFF8B5CF6),
+                                          const Color(0xFF6366F1).withOpacity(0.3),
                                           Colors.transparent,
                                         ],
-                                        stops: const [0.0, 0.5, 1.0],
+                                        stops: const [0.0, 0.3, 0.7, 1.0],
+                                      ),
+                                    ),
+                                    child: Container(
+                                      margin: const EdgeInsets.all(6),
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
                                 );
                               },
                             ),
-                            
-                            // Inner pulsing circle
-                            AnimatedBuilder(
-                              animation: _pulseAnimation,
-                              builder: (context, child) {
-                                return Container(
-                                  width: 60 * _pulseAnimation.value,
-                                  height: 60 * _pulseAnimation.value,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: RadialGradient(
-                                      colors: [
-                                        const Color(0xFF34D399).withOpacity(0.6),
-                                        const Color(0xFF34D399).withOpacity(0.1),
-                                        Colors.transparent,
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            
-                            // Center dot
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFFFBBF24),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xFFFBBF24),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                            ),
+
                           ],
                         ),
                       ),
