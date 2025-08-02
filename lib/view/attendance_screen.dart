@@ -16,6 +16,7 @@
     DateTime _focusedDay = DateTime.now();
     DateTime? _selectedDay;
     late TextEditingController _fareController;
+    
 
 
     @override
@@ -23,7 +24,239 @@
       super.initState();
       _selectedDay = _focusedDay;
        _fareController = TextEditingController();
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+    _checkAndPromptCabUsage();
+  });
+       
     }
+    void _checkAndPromptCabUsage() {
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+
+          final attendanceController = Provider.of<AttendanceController>(context, listen: false);
+          // Use your controller to check if already marked
+          final attendance = attendanceController.getAttendanceForDate(today);
+
+          // Morning: e.g., between 6AM and 11AM
+          if (now.hour >= 6 && now.hour <= 11 && attendance.morningCabUsed == false) {
+            _showCabUsageDialog(isMorning: true);
+          }
+          // Evening: e.g., between 4PM and 8PM
+          else if (now.hour >= 15 && now.hour <= 20 && attendance.eveningCabUsed == false) {
+            _showCabUsageDialog(isMorning: false);
+          }
+        }
+
+    Future<void> _showCabUsageDialog({required bool isMorning}) async { 
+  final attendanceController = Provider.of<AttendanceController>(context, listen: false);
+  
+  final result = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 10,
+        child: Container(
+          padding:  EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white,
+                Colors.grey.shade50,
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon with background
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.directions_car_rounded,
+                  size: 40,
+                  color: const Color(0xFF10B981),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Title
+              Text(
+                'Cab Service',
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Subtitle with time indicator
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isMorning 
+                    ? Colors.orange.shade50 
+                    : Colors.indigo.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isMorning 
+                      ? Colors.orange.shade200 
+                      : Colors.indigo.shade200,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isMorning ? Icons.wb_sunny : Icons.nightlight_round,
+                      size: 16,
+                      color: isMorning ? Colors.orange.shade600 : Colors.indigo.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isMorning ? 'Morning Trip' : 'Evening Trip',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isMorning ? Colors.orange.shade600 : Colors.indigo.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Question text
+              Text(
+                'Will you be using the cab service for your ${isMorning ? 'morning' : 'evening'} commute today?',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                  height: 1.4,
+                ),
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 50,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          side: BorderSide(color: Colors.red.shade300, width: 2),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            
+                            Text(
+                              'No, Thanks',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                color: Colors.red.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                   SizedBox(width: 15),
+                  
+                  Expanded(
+                    child: Container(
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          elevation: 3,
+                          shadowColor: const Color(0xFF10B981).withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            Text(
+                              'Yes, I Will',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13  ,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
+  if (result == true) {
+    final today = DateTime.now();
+    if (isMorning) {
+      attendanceController.updateMorningCabUsage(today, true);
+    } else {
+      attendanceController.updateEveningCabUsage(today, true);
+    }
+    
+    // Optional: Show confirmation snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              'Cab usage recorded for ${isMorning ? 'morning' : 'evening'} trip',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF10B981),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+}
+
+    
 
     void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
       setState(() {
@@ -420,52 +653,52 @@
                   cellMargin: const EdgeInsets.all(4),
                 ),
                 calendarBuilders: CalendarBuilders(
-  defaultBuilder: (context, day, focusedDay) {
-    final attendance = attendanceController.getAttendanceForDate(day);
+                  defaultBuilder: (context, day, focusedDay) {
+                    final attendance = attendanceController.getAttendanceForDate(day);
 
-    final morning = attendance.morningCabUsed;
-    final evening = attendance.eveningCabUsed;
+                    final morning = attendance.morningCabUsed;
+                    final evening = attendance.eveningCabUsed;
 
-    final today = DateTime.now();
-    final isPastDay = day.isBefore(DateTime(today.year, today.month, today.day));
+                    final today = DateTime.now();
+                    final isPastDay = day.isBefore(DateTime(today.year, today.month, today.day));
 
-    Color? bgColor;
+                    Color? bgColor;
 
-    if (morning && evening) {
-      bgColor = const Color(0xFF10B981); // green
-    } else if (morning) {
-      bgColor = const Color(0xFFF59E0B); // orange
-    } else if (evening) {
-      bgColor = const Color(0xFF8B5CF6); // purple
-    } else if (isPastDay) {
-      bgColor = Colors.redAccent; // red for previous days where neither trip used
-    } else {
-      bgColor = const Color.fromARGB(255, 190, 199, 212); // upcoming days or today
-    }
+                    if (morning && evening) {
+                      bgColor = const Color(0xFF10B981); // green
+                    } else if (morning) {
+                      bgColor = const Color(0xFFF59E0B); // orange
+                    } else if (evening) {
+                      bgColor = const Color(0xFF8B5CF6); // purple
+                    } else if (isPastDay) {
+                      bgColor = Colors.redAccent; // red for previous days where neither trip used
+                    } else {
+                      bgColor = const Color.fromARGB(255, 190, 199, 212); // upcoming days or today
+                    }
 
-    return Center(
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: bgColor,
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: Text(
-            '${day.day}',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-    );
-  },
-),
-
+                    return Center(
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${day.day}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+  
               ),
 
                 ),
