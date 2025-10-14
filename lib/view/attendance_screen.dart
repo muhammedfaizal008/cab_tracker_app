@@ -297,7 +297,7 @@
           _showSuccessDialog(
             result['filePath'], 
             result['fileName'],
-            result['stats'],
+            // result['stats'],
           );
         } else {
           _showErrorDialog(result['error']);
@@ -309,7 +309,9 @@
       }
     }
     
-    void _showSuccessDialog(String filePath, String fileName, Map<String, dynamic> stats) {
+    void _showSuccessDialog(String filePath, String fileName
+    // , Map<String, dynamic> stats
+    ) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -354,10 +356,11 @@
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildStatRow('Working Days', '${stats['totalWorkingDays']}'),
-                    _buildStatRow('Morning Trips', '${stats['totalMorningTrips']}'),
-                    _buildStatRow('Evening Trips', '${stats['totalEveningTrips']}'),
-                    _buildStatRow('Total Trips', '${stats['totalTrips']}'),
+
+                    // _buildStatRow('Working Days', '${stats['totalWorkingDays']}'),
+                    // _buildStatRow('Morning Trips', '${stats['totalMorningTrips']}'),
+                    // _buildStatRow('Evening Trips', '${stats['totalEveningTrips']}'),
+                    // _buildStatRow('Total Trips', '${stats['totalTrips']}'),
                   ],
                 ),
               ),
