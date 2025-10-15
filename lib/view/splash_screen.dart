@@ -30,6 +30,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(
+        AssetImage("assets/images/cabApp.png"),
+        context,
+      );
+    });
     
     _primaryController = AnimationController(
       vsync: this,
@@ -58,6 +64,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _setupAnimations();
     _startAnimationSequence();
+    
     
     Future.delayed(const Duration(milliseconds: 3500), () {
       if (mounted) {
@@ -245,37 +252,38 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(32),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.white.withOpacity(0.1),
-                                            Colors.white.withOpacity(0.02),
-                                          ],
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: ShaderMask(
-                                          shaderCallback: (bounds) => const LinearGradient(
-                                            colors: [
-                                              Color(0xFF60A5FA),
-                                              Color(0xFF34D399),
-                                              Color(0xFFFBBF24),
-                                            ],
-                                          ).createShader(bounds),
-                                          child:  Icon(
-                                            Icons.local_taxi,
-                                            size: 70,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  child: Image.asset("assets/images/cabApp.png")
+                                  // BackdropFilter(
+                                  //   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  //   child: Container(
+                                  //     decoration: BoxDecoration(
+                                  //       gradient: LinearGradient(
+                                  //         begin: Alignment.topLeft,
+                                  //         end: Alignment.bottomRight,
+                                  //         colors: [
+                                  //           Colors.white.withOpacity(0.1),
+                                  //           Colors.white.withOpacity(0.02),
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //     child: Center(
+                                  //       child: ShaderMask(
+                                  //         shaderCallback: (bounds) => const LinearGradient(
+                                  //           colors: [
+                                  //             Color(0xFF60A5FA),
+                                  //             Color(0xFF34D399),
+                                  //             Color(0xFFFBBF24),
+                                  //           ],
+                                  //         ).createShader(bounds),
+                                  //         child:  Icon(
+                                  //           Icons.local_taxi,
+                                  //           size: 70,
+                                  //           color: Colors.white,
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ),
                               ),
                             ),

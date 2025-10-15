@@ -156,7 +156,7 @@
               Row(
                 children: [
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 50,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
@@ -188,7 +188,7 @@
                    SizedBox(width: 15),
                   
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
