@@ -822,7 +822,7 @@
                                 Expanded(
                                   child: TextField(
                                     controller: _fareController,
-                                    keyboardType: TextInputType.number,
+                                    keyboardType: TextInputType.numberWithOptions(),
                                     decoration: InputDecoration(
                                       labelText: 'Cab Fare per Trip',
                                       labelStyle: GoogleFonts.poppins(
