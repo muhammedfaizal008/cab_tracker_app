@@ -601,7 +601,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Divider(height: 1),
+                     Divider(height: 1,color: Colors.grey.shade200),
                     const SizedBox(height: 12),
                     _buildLegend(),
                   ],
@@ -1154,7 +1154,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             cabUsed: morning,
             onToggleCab: (used) => controller.updateMorningCabUsage(_selectedDay!, used),
           ),
-           Divider(height: 1, indent: 20, endIndent: 20,color: Colors.grey.shade400),
+           Divider(height: 1, indent: 20, endIndent: 20,color: Colors.grey.shade200),
           _tripRow(
             title: 'Evening Trip',
             subtitle: 'Track your evening commute',
