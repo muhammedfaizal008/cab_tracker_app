@@ -1,4 +1,4 @@
-import 'package:cab_tracker_app/view/splash_screen.dart';
+import 'package:cab_tracker_app/view/attendance_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -104,7 +104,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
-      home: const SplashScreen(),
+      home: const AttendanceScreen(),
     );
   }
 }
