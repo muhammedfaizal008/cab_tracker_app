@@ -22,8 +22,6 @@ Future<void> main() async {
   }
 
   final attendanceController = AttendanceController();
-  await attendanceController.loadAllRecords();
-  await attendanceController.loadFarePerTrip();
 
   runApp(
     ChangeNotifierProvider(

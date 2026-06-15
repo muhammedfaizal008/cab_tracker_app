@@ -31,6 +31,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   DateTime? _selectedDay;
   late TextEditingController _fareController;
   bool _isEditingFare = false;
+  bool _isLoading = true;
 
   OverlayEntry? _popupOverlayEntry;
   GlobalKey<_StatusSelectionPopupState>? _popupKey;
@@ -41,9 +42,28 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     super.initState();
     _selectedDay = _focusedDay;
     _fareController = TextEditingController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAndPromptCabUsage();
-    });
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    // 600ms delay for a smooth transition animation
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (!mounted) return;
+
+    final attendanceController = Provider.of<AttendanceController>(context, listen: false);
+    await Future.wait([
+      attendanceController.loadAllRecords(),
+      attendanceController.loadFarePerTrip(),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkAndPromptCabUsage();
+      });
+    }
   }
 
   @override
@@ -482,6 +502,58 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: _kBg,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(_kGreen),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Initializing Tracker',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: _kSlate900,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Loading your attendance records...',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: _kSlate500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final attendanceController = Provider.of<AttendanceController>(context);
     final selectedDateAttendance = _selectedDay != null
         ? attendanceController.getAttendanceForDate(_selectedDay!)
@@ -619,33 +691,33 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Cab Usage',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: _kSlate900,
-                          ),
-                        ),
-                        Text(
-                          _selectedDayLabel(),
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: _kSlate500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       'Cab Usage',
+                    //       style: GoogleFonts.poppins(
+                    //         fontSize: 18,
+                    //         fontWeight: FontWeight.w600,
+                    //         color: _kSlate900,
+                    //       ),
+                    //     ),
+                    //     Text(
+                    //       _selectedDayLabel(),
+                    //       style: GoogleFonts.poppins(
+                    //         fontSize: 13,
+                    //         fontWeight: FontWeight.w500,
+                    //         color: _kSlate500,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 12),
 
                     _buildFareCard(attendanceController),
                     const SizedBox(height: 16),
 
-                    _buildCombinedTripCard(attendanceController, selectedDateAttendance),
+                    // _buildCombinedTripCard(attendanceController, selectedDateAttendance),
                   ],
                 ),
               ),
@@ -1130,43 +1202,43 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
   }
 
-  /// A single card holding both morning and evening toggles side by side,
-  /// instead of two full-width stacked cards.
-  Widget _buildCombinedTripCard(AttendanceController controller, dynamic attendance) {
-    final morning = attendance?.morningCabUsed ?? false;
-    final evening = attendance?.eveningCabUsed ?? false;
+  // /// A single card holding both morning and evening toggles side by side,
+  // /// instead of two full-width stacked cards.
+  // Widget _buildCombinedTripCard(AttendanceController controller, dynamic attendance) {
+  //   final morning = attendance?.morningCabUsed ?? false;
+  //   final evening = attendance?.eveningCabUsed ?? false;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Column(
-        children: [
-          _tripRow(
-            title: 'Morning Trip',
-            subtitle: 'Track your morning commute',
-            icon: Icons.wb_sunny_outlined,
-            iconColor: _kOrange,
-            cabUsed: morning,
-            onToggleCab: (used) => controller.updateMorningCabUsage(_selectedDay!, used),
-          ),
-           Divider(height: 1, indent: 20, endIndent: 20,color: Colors.grey.shade200),
-          _tripRow(
-            title: 'Evening Trip',
-            subtitle: 'Track your evening commute',
-            icon: Icons.nights_stay_outlined,
-            iconColor: _kPurple,
-            cabUsed: evening,
-            onToggleCab: (used) => controller.updateEveningCabUsage(_selectedDay!, used),
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 4)),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         _tripRow(
+  //           title: 'Morning Trip',
+  //           subtitle: 'Track your morning commute',
+  //           icon: Icons.wb_sunny_outlined,
+  //           iconColor: _kOrange,
+  //           cabUsed: morning,
+  //           onToggleCab: (used) => controller.updateMorningCabUsage(_selectedDay!, used),
+  //         ),
+  //          Divider(height: 1, indent: 20, endIndent: 20,color: Colors.grey.shade200),
+  //         _tripRow(
+  //           title: 'Evening Trip',
+  //           subtitle: 'Track your evening commute',
+  //           icon: Icons.nights_stay_outlined,
+  //           iconColor: _kPurple,
+  //           cabUsed: evening,
+  //           onToggleCab: (used) => controller.updateEveningCabUsage(_selectedDay!, used),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _tripRow({
     required String title,
@@ -1269,7 +1341,7 @@ class _StatusSelectionPopupState extends State<StatusSelectionPopup>
   int _currentIndex = -1;
 
   final double popupWidth = 232.0;
-  final double popupHeight = 64.0;
+  final double popupHeight = 80.0;
 
   @override
   void initState() {
@@ -1413,37 +1485,58 @@ class _StatusSelectionPopupState extends State<StatusSelectionPopup>
       );
     }
 
-    return Tooltip(
-      message: label,
-      child: AnimatedScale(
-        scale: isSelected ? 1.25 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutBack,
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              _currentIndex = index;
-            });
-            confirmSelection();
-          },
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      )
-                    ]
-                  : null,
+    return SizedBox(
+      width: 40,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Tooltip(
+            message: label,
+            child: AnimatedScale(
+              scale: isSelected ? 1.25 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOutBack,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                  confirmSelection();
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            )
+                          ]
+                        : null,
+                  ),
+                  child: circle,
+                ),
+              ),
             ),
-            child: circle,
           ),
-        ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.visible,
+            style: GoogleFonts.poppins(
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              color: isSelected ? _kSlate900 : _kSlate500,
+            ),
+          ),
+        ],
       ),
     );
   }
